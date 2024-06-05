@@ -6,7 +6,7 @@ os.makedirs(assets_folder, exist_ok=True)
 
 file_links = {
     "rmvpe/rmvpe.pt": "https://huggingface.co/Rejekts/project/resolve/main/rmvpe.pt",
-    "hubert/hubert_base.pt": "https://huggingface.co/utter-project/mHuBERT-147-base-3rd-iter/resolve/main/checkpoint_best.pt"
+    "hubert/hubert_base.pt": " https://huggingface.co/Politrees/all_RVC-pretrained_and_other/resolve/main/HuBERTs/contentvec_base.pt"
 }
 
 for file, link in file_links.items():
