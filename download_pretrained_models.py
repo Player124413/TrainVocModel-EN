@@ -3,18 +3,18 @@ pretrained_folder = "/content/assets/pretrained_v2"
 if not os.path.exists(pretrained_folder):
     os.makedirs(pretrained_folder)
 files = {
-    "default_D_40k.pth":"https://huggingface.co/lj1995/VoiceConversionWebUI/resolve/main/pretrained_v2/f0D40k.pth",
-    "default_G_40k.pth":"https://huggingface.co/lj1995/VoiceConversionWebUI/resolve/main/pretrained_v2/f0G40k.pth",
-    "Ov2Super_D_40k.pth":"https://huggingface.co/ORVC/Ov2Super/resolve/main/f0Ov2Super40kD.pth",
-    "Ov2Super_G_40k.pth":"https://huggingface.co/ORVC/Ov2Super/resolve/main/f0Ov2Super40kG.pth",
-    "SnowieV2_D_40k.pth":"https://huggingface.co/MUSTAR/SnowyRuPretrain_EnP_40k/resolve/main/D_Snowie_RuPretrain_EnP.pth",
-    "SnowieV2_G_40k.pth":"https://huggingface.co/MUSTAR/SnowyRuPretrain_EnP_40k/resolve/main/G_Snowie_RuPretrain_EnP.pth",
-    "Rin_E3_D_40k.pth":"https://huggingface.co/ORVC/RIN_E3/resolve/main/RIN_E3_D.pth",
-    "Rin_E3_G_40k.pth":"https://huggingface.co/ORVC/RIN_E3/resolve/main/RIN_E3_G.pth",
-    "SnowieV3_D_40k.pth":"https://huggingface.co/MUSTAR/SnowieV3.1-40k/resolve/main/D_SnowieV3.1_40k.pth",
-    "SnowieV3_G_40k.pth":"https://huggingface.co/MUSTAR/SnowieV3.1-40k/resolve/main/G_SnowieV3.1_40k.pth",
-    "SnowieV3_x_Rin_E3_D_40k.pth":"https://huggingface.co/MUSTAR/SnowieV3.1-X-RinE3-40K/resolve/main/D_Snowie-X-Rin_40k.pth",
-    "SnowieV3_x_Rin_E3_G_40k.pth":"https://huggingface.co/MUSTAR/SnowieV3.1-X-RinE3-40K/resolve/main/G_Snowie-X-Rin_40k.pth"
+    "f0D40k":"https://huggingface.co/lj1995/VoiceConversionWebUI/resolve/main/pretrained_v2/f0D40k.pth",
+    "f0G40k":"https://huggingface.co/lj1995/VoiceConversionWebUI/resolve/main/pretrained_v2/f0G40k.pth",
+    "f0D40k":"https://huggingface.co/ORVC/Ov2Super/resolve/main/f0Ov2Super40kD.pth",
+    "f0G40k":"https://huggingface.co/ORVC/Ov2Super/resolve/main/f0Ov2Super40kG.pth",
+    "f0D40k":"https://huggingface.co/MUSTAR/SnowyRuPretrain_EnP_40k/resolve/main/D_Snowie_RuPretrain_EnP.pth",
+    "f0G40k":"https://huggingface.co/MUSTAR/SnowyRuPretrain_EnP_40k/resolve/main/G_Snowie_RuPretrain_EnP.pth",
+    "f0D40k":"https://huggingface.co/ORVC/RIN_E3/resolve/main/RIN_E3_D.pth",
+    "f0G40k":"https://huggingface.co/ORVC/RIN_E3/resolve/main/RIN_E3_G.pth",
+    "f0D40k":"https://huggingface.co/MUSTAR/SnowieV3.1-40k/resolve/main/D_SnowieV3.1_40k.pth",
+    "f0G40k":"https://huggingface.co/MUSTAR/SnowieV3.1-40k/resolve/main/G_SnowieV3.1_40k.pth",
+    "f0D40k":"https://huggingface.co/MUSTAR/SnowieV3.1-X-RinE3-40K/resolve/main/D_Snowie-X-Rin_40k.pth",
+    "f0G40k":"https://huggingface.co/MUSTAR/SnowieV3.1-X-RinE3-40K/resolve/main/G_Snowie-X-Rin_40k.pth"
 }
 for file, link in files.items():
     file_path = os.path.join(pretrained_folder, file)
