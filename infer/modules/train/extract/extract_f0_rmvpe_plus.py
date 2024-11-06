@@ -1,7 +1,7 @@
 import os
 import sys
 import traceback
-
+import lib
 import parselmouth
 
 now_dir = os.getcwd()
