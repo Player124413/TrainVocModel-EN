@@ -1,7 +1,7 @@
 import os
 import sys
 import logging
-
+from tqdm import tqdm
 logger = logging.getLogger(__name__)
 
 now_dir = os.getcwd()
@@ -10,7 +10,7 @@ sys.path.append(os.path.join(now_dir))
 import datetime
 
 from infer.lib.train import utils
-
+from lib.train.utils import EpochRecorder
 hps = utils.get_hparams()
 os.environ["CUDA_VISIBLE_DEVICES"] = hps.gpus.replace("-", ",")
 n_gpus = len(hps.gpus.split("-"))
@@ -121,7 +121,8 @@ def run(rank, n_gpus, hps, logger: logging.Logger):
         logger.info(hps)
         writer = SummaryWriter(log_dir=hps.model_dir)
         writer_eval = SummaryWriter(log_dir=os.path.join(hps.model_dir, "eval"))
-
+        # Создаем экземпляр EpochRecorder для записи времени и эпохи в лог
+        epoch_recorder = EpochRecorder()
     dist.init_process_group(
         backend="gloo", init_method="env://", world_size=n_gpus, rank=rank
     )
@@ -253,6 +254,13 @@ def run(rank, n_gpus, hps, logger: logging.Logger):
     cache = []
     for epoch in range(epoch_str, hps.train.epochs + 1):
         if rank == 0:
+            train_loader = tqdm(train_loader) # Оборачиваем DataLoader в tqdm для создания прогресс-бара
+        for batch_idx, info in enumerate(train_loader):
+            # Ваш код обучения здесь
+            if rank == 0:
+                # Обновляем прогресс-бар после каждой итерации
+                train_loader.set_description(f'Эпоха {epoch}')
+            if rank == 0:
             train_and_evaluate(
                 rank,
                 epoch,
@@ -280,6 +288,10 @@ def run(rank, n_gpus, hps, logger: logging.Logger):
                 None,
                 cache,
             )
+        
+        # Вывод текущей эпохи
+        print(f"Эпоха {epoch} завершена")
+        time.sleep(1)  # Для предотвращения слишком быстрого вывода
         scheduler_g.step()
         scheduler_d.step()
 
