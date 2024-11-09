@@ -41,7 +41,7 @@ class Slicer:
     def __init__(
         self,
         sr: int,
-        threshold: float = -40.0,
+        threshold: float = -30.0,
         min_length: int = 5000,
         min_interval: int = 300,
         hop_size: int = 20,
