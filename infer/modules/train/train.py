@@ -563,12 +563,17 @@ def train_and_evaluate(
                     ),
                 )
             )
-
-    if rank == 0:
-        logger.info("====> Эпоха: {}/{} | Шаг: {} | {}".format(epoch, hps.total_epoch, global_step, epoch_recorder.record()))
-    if epoch >= hps.total_epoch and rank == 0:
-        logger.info("Тренировка успешно завершена. Завершение программы...")
-
+ lowest_value_rounded = float(lowest_value["value"])
+ lowest_value_rounded = round(lowest_value_rounded, 3)
+    
+    record = f"{model_name} | epoch={epoch} | step={global_step} | {epoch_recorder.record()}"
+        if epoch > 1:
+            record = (
+                record
+                + f" | lowest_value={lowest_value_rounded} (epoch {lowest_value['epoch']} and step {lowest_value['step']})"
+            )
+        print(record)
+        last_loss_gen_all = loss_gen_all
         if hasattr(net_g, "module"):
             ckpt = net_g.module.state_dict()
         else:
