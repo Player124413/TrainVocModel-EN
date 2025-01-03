@@ -116,11 +116,11 @@ def main():
         children[i].join()
 
 
-def run(rank, n_gpus, hps, logger: logging.Logger):
+def run(rank, n_gpus, hps):
     global global_step
     if rank == 0:
-        # logger = utils.get_logger(hps.model_dir)
-        logger.info(hps)
+        
+        print(hps)
         # utils.check_git_hash(hps.model_dir)
         writer = SummaryWriter(log_dir=hps.model_dir)
         writer_eval = SummaryWriter(log_dir=os.path.join(hps.model_dir, "eval"))
@@ -209,7 +209,7 @@ def run(rank, n_gpus, hps, logger: logging.Logger):
             utils.latest_checkpoint_path(hps.model_dir, "D_*.pth"), net_d, optim_d
         )  # D多半加载没事
         if rank == 0:
-            logger.info("loaded D")
+            print("loaded D")
         # _, _, _, epoch_str = utils.load_checkpoint(utils.latest_checkpoint_path(hps.model_dir, "G_*.pth"), net_g, optim_g,load_opt=0)
         _, _, _, epoch_str = utils.load_checkpoint(
             utils.latest_checkpoint_path(hps.model_dir, "G_*.pth"), net_g, optim_g
@@ -223,30 +223,30 @@ def run(rank, n_gpus, hps, logger: logging.Logger):
         global_step = 0
         if hps.pretrainG != "":
             if rank == 0:
-                logger.info("loaded pretrained %s" % (hps.pretrainG))
+                print("loaded pretrained %s" % (hps.pretrainG))
             if hasattr(net_g, "module"):
-                logger.info(
+                print(
                     net_g.module.load_state_dict(
                         torch.load(hps.pretrainG, map_location="cpu")["model"]
                     )
                 )  ##测试不加载优化器
             else:
-                logger.info(
+                print(
                     net_g.load_state_dict(
                         torch.load(hps.pretrainG, map_location="cpu")["model"]
                     )
                 )  ##测试不加载优化器
         if hps.pretrainD != "":
             if rank == 0:
-                logger.info("loaded pretrained %s" % (hps.pretrainD))
+                print("loaded pretrained %s" % (hps.pretrainD))
             if hasattr(net_d, "module"):
-                logger.info(
+                print(
                     net_d.module.load_state_dict(
                         torch.load(hps.pretrainD, map_location="cpu")["model"]
                     )
                 )
             else:
-                logger.info(
+                print(
                     net_d.load_state_dict(
                         torch.load(hps.pretrainD, map_location="cpu")["model"]
                     )
@@ -296,7 +296,7 @@ def run(rank, n_gpus, hps, logger: logging.Logger):
 
 
 def train_and_evaluate(
-    rank, epoch, hps, nets, optims, schedulers, scaler, loaders, logger, writers, cache
+    rank, epoch, hps, nets, optims, schedulers, scaler, loaders, writers, cache
 ):
     net_g, net_d = nets
     optim_g, optim_d = optims
@@ -501,7 +501,7 @@ def train_and_evaluate(
         if rank == 0:
             if global_step % hps.train.log_interval == 0:
                 lr = optim_g.param_groups[0]["lr"]
-                logger.info(
+                print(
                     "Train Epoch: {} [{:.0f}%]".format(
                         epoch, 100.0 * batch_idx / len(train_loader)
                     )
@@ -512,8 +512,8 @@ def train_and_evaluate(
                 if loss_kl > 9:
                     loss_kl = 9
 
-                logger.info([global_step, lr])
-                logger.info(
+                print([global_step, lr])
+                print(
                     f"loss_disc={loss_disc:.3f}, loss_gen={loss_gen:.3f}, loss_fm={loss_fm:.3f},loss_mel={loss_mel:.3f}, loss_kl={loss_kl:.3f}"
                 )
                 scalar_dict = {
@@ -596,7 +596,7 @@ def train_and_evaluate(
                 ckpt = net_g.module.state_dict()
             else:
                 ckpt = net_g.state_dict()
-            logger.info(
+            print(
                 "saving ckpt %s_e%s:%s"
                 % (
                     hps.name,
@@ -614,15 +614,15 @@ def train_and_evaluate(
             )
 
     if rank == 0:
-        logger.info("====> Epoch: {} {}".format(epoch, epoch_recorder.record()))
+        print("====> Epoch: {} {}".format(epoch, epoch_recorder.record()))
     if epoch >= hps.total_epoch and rank == 0:
-        logger.info("Training is done. The program is closed.")
+        print("Training is done. The program is closed.")
 
         if hasattr(net_g, "module"):
             ckpt = net_g.module.state_dict()
         else:
             ckpt = net_g.state_dict()
-        logger.info(
+        print(
             "saving final ckpt:%s"
             % (
                 savee(
