@@ -33,7 +33,7 @@ def load_checkpoint_d(checkpoint_path, combd, sbd, optimizer=None, load_opt=1):
             try:
                 new_state_dict[k] = saved_state_dict[k]
                 if saved_state_dict[k].shape != state_dict[k].shape:
-                    logger.warning(
+                    print(
                         "shape-%s-mismatch. need: %s, get: %s",
                         k,
                         state_dict[k].shape,
@@ -222,8 +222,8 @@ def plot_spectrogram_to_numpy(spectrogram):
 
         matplotlib.use("Agg")
         MATPLOTLIB_FLAG = True
-        mpl_logger = logging.getLogger("matplotlib")
-        mpl_logger.setLevel(logging.WARNING)
+        
+        
     import matplotlib.pylab as plt
     import numpy as np
 
@@ -248,8 +248,8 @@ def plot_alignment_to_numpy(alignment, info=None):
 
         matplotlib.use("Agg")
         MATPLOTLIB_FLAG = True
-        mpl_logger = logging.getLogger("matplotlib")
-        mpl_logger.setLevel(logging.WARNING)
+        
+        
     import matplotlib.pylab as plt
     import numpy as np
 
@@ -414,7 +414,7 @@ def get_hparams_from_file(config_path):
 def check_git_hash(model_dir):
     source_dir = os.path.dirname(os.path.realpath(__file__))
     if not os.path.exists(os.path.join(source_dir, ".git")):
-        logger.warning(
+        print(
             "{} is not a git repository, therefore hash value comparison will be ignored.".format(
                 source_dir
             )
@@ -427,7 +427,7 @@ def check_git_hash(model_dir):
     if os.path.exists(path):
         saved_hash = open(path).read()
         if saved_hash != cur_hash:
-            logger.warning(
+            print(
                 "git hash values are different. {}(saved) != {}(current)".format(
                     saved_hash[:8], cur_hash[:8]
                 )
