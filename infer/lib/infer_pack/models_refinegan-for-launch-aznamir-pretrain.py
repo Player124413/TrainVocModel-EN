@@ -828,7 +828,6 @@ class SynthesizerTrnMs768NSFsid(nn.Module):
         upsample_initial_channel,
         upsample_kernel_sizes,
         spk_embed_dim,
-        vocoder
         gin_channels,
         sr,
         **kwargs
