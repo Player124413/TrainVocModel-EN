@@ -22,11 +22,11 @@ class TextAudioLoaderMultiNSFsid(torch.utils.data.Dataset):
     def __init__(self, audiopaths_and_text, hparams):
         self.audiopaths_and_text = load_filepaths_and_text(audiopaths_and_text)
         self.max_wav_value = hparams.max_wav_value
-        self.sample_rate = hparams.sample_rate
+        self.sampling_rate = hparams.sampling_rate
         self.filter_length = hparams.filter_length
         self.hop_length = hparams.hop_length
         self.win_length = hparams.win_length
-        self.sample_rate = hparams.sample_rate
+        self.sampling_rate = hparams.sampling_rate
         self.min_text_len = getattr(hparams, "min_text_len", 1)
         self.max_text_len = getattr(hparams, "max_text_len", 5000)
         self._filter()
@@ -96,11 +96,12 @@ class TextAudioLoaderMultiNSFsid(torch.utils.data.Dataset):
         return phone, pitch, pitchf
 
     def get_audio(self, filename):
-        audio, sample_rate = load_wav_to_torch(filename)
-        if sample_rate != self.sample_rate:
+        audio, sampling_rate = load_wav_to_torch(filename)
+        if sampling_rate != self.sampling_rate:
             raise ValueError(
-                f"{sample_rate} SR doesn't match target {self.sample_rate} SR"
-                
+                "{} SR doesn't match target {} SR".format(
+                    sampling_rate, self.sampling_rate
+                )
             )
         audio_norm = audio
         #        audio_norm = audio / self.max_wav_value
@@ -116,7 +117,7 @@ class TextAudioLoaderMultiNSFsid(torch.utils.data.Dataset):
                 spec = spectrogram_torch(
                     audio_norm,
                     self.filter_length,
-                    self.sample_rate,
+                    self.sampling_rate,
                     self.hop_length,
                     self.win_length,
                     center=False,
@@ -127,7 +128,7 @@ class TextAudioLoaderMultiNSFsid(torch.utils.data.Dataset):
             spec = spectrogram_torch(
                 audio_norm,
                 self.filter_length,
-                self.sample_rate,
+                self.sampling_rate,
                 self.hop_length,
                 self.win_length,
                 center=False,
@@ -229,11 +230,11 @@ class TextAudioLoader(torch.utils.data.Dataset):
     def __init__(self, audiopaths_and_text, hparams):
         self.audiopaths_and_text = load_filepaths_and_text(audiopaths_and_text)
         self.max_wav_value = hparams.max_wav_value
-        self.sample_rate = hparams.sample_rate
+        self.sampling_rate = hparams.sampling_rate
         self.filter_length = hparams.filter_length
         self.hop_length = hparams.hop_length
         self.win_length = hparams.win_length
-        self.sample_rate = hparams.sample_rate
+        self.sampling_rate = hparams.sampling_rate
         self.min_text_len = getattr(hparams, "min_text_len", 1)
         self.max_text_len = getattr(hparams, "max_text_len", 5000)
         self._filter()
@@ -287,10 +288,12 @@ class TextAudioLoader(torch.utils.data.Dataset):
         return phone
 
     def get_audio(self, filename):
-        audio, sample_rate = load_wav_to_torch(filename)
-        if sample_rate != self.sample_rate:
+        audio, sampling_rate = load_wav_to_torch(filename)
+        if sampling_rate != self.sampling_rate:
             raise ValueError(
-                f"{sample_rate} SR doesn't match target {self.sample_rate} SR"
+                "{} SR doesn't match target {} SR".format(
+                    sampling_rate, self.sampling_rate
+                )
             )
         audio_norm = audio
         #        audio_norm = audio / self.max_wav_value
@@ -306,7 +309,7 @@ class TextAudioLoader(torch.utils.data.Dataset):
                 spec = spectrogram_torch(
                     audio_norm,
                     self.filter_length,
-                    self.sample_rate,
+                    self.sampling_rate,
                     self.hop_length,
                     self.win_length,
                     center=False,
@@ -317,7 +320,7 @@ class TextAudioLoader(torch.utils.data.Dataset):
             spec = spectrogram_torch(
                 audio_norm,
                 self.filter_length,
-                self.sample_rate,
+                self.sampling_rate,
                 self.hop_length,
                 self.win_length,
                 center=False,
