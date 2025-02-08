@@ -117,7 +117,7 @@ else:
                 feats = readwave(wav_path, normalize=False)  # Normalize input
                 inputs = feature_extractor(
                     feats.squeeze(0).numpy(),
-                    sample_rate=16000,
+                    sampling_rate=16000,
                     return_tensors="pt",
                 ).to(device)
 
