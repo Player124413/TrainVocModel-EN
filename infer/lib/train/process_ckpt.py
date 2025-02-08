@@ -32,7 +32,7 @@ def savee(ckpt, sr, if_f0, name, epoch, version, hps):
             hps.model.upsample_kernel_sizes,
             hps.model.spk_embed_dim,
             hps.model.gin_channels,
-            hps.data.sample_rate,
+            hps.data.sampling_rate,
         ]
         opt["info"] = "%sepoch" % epoch
         opt["sr"] = sr
