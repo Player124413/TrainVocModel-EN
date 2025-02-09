@@ -92,7 +92,7 @@ from infer.lib.train.mel_processing import mel_spectrogram_torch, spec_to_mel_to
 from infer.lib.train.process_ckpt import savee
 
 global_step = 0
-vocoder = sys.argv[15]
+
 class EpochRecorder:
     def __init__(self):
         self.last_time = ttime()
@@ -194,7 +194,7 @@ def run(rank, n_gpus, hps, logger: logging.Logger):
             **hps.model,
             is_half=hps.train.fp16_run,
             sr=hps.sample_rate,
-            vocoder=vocoder
+            
         )
     else:
         net_g = RVC_Model_nof0(
