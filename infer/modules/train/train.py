@@ -194,6 +194,7 @@ def run(rank, n_gpus, hps, logger: logging.Logger):
             **hps.model,
             is_half=hps.train.fp16_run,
             sr=hps.sample_rate,
+            vocoder=vocoder
         )
     else:
         net_g = RVC_Model_nof0(
