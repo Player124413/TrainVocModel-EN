@@ -158,6 +158,7 @@ def get_hparams(init=True):
     hparams.save_every_weights = args.save_every_weights
     hparams.if_cache_data_in_gpu = args.if_cache_data_in_gpu
     hparams.optimizer = args.optimizer
+    hparams.vocoder = args.vocoder
     hparams.data.training_files = "%s/filelist.txt" % experiment_dir
     return hparams
 
