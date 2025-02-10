@@ -68,7 +68,7 @@ from infer.lib.train.data_utils import (
     TextAudioLoader,
     TextAudioLoaderMultiNSFsid,
 )
-vocoder = "RefineGAN"
+
 if hps.version == "v1":
     from infer.lib.infer_pack.models import MultiPeriodDiscriminator
     from infer.lib.infer_pack.models import SynthesizerTrnMs256NSFsid as RVC_Model_f0
