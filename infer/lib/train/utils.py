@@ -133,7 +133,7 @@ def get_hparams(init=True):
     parser.add_argument("-l", "--if_latest", type=int, default=1)
     parser.add_argument("-c", "--if_cache_data_in_gpu", type=int, default=0)
     parser.add_argument("-o", "--optimizer", type=str, default="AdamW") # AdamW | RAdam
-    parser.add_argument("-vo", "--vocoder", type=str, default="RefineGAN") # RefineGAN| Default
+    parser.add_argument("-vo", "--vocoder", type=str, default="RefineGAN") # RefineGAN | Default
     args = parser.parse_args()
     name = args.experiment_dir
     experiment_dir = os.path.join("./logs", args.experiment_dir)
