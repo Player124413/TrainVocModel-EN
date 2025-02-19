@@ -49,7 +49,8 @@ except Exception:
     from torch.amp import GradScaler, autocast
 
 torch.backends.cudnn.deterministic = False
-torch.backends.cudnn.benchmark = False
+torch.backends.cudnn.benchmark = True
+
 from time import sleep
 from time import time as ttime
 
@@ -134,7 +135,6 @@ def main():
 def run(rank, n_gpus, hps, logger: logging.Logger):
     global global_step
     if rank == 0:
-        logger.info(hps)
         writer = SummaryWriter(log_dir=hps.model_dir)
         writer_eval = SummaryWriter(log_dir=os.path.join(hps.model_dir, "eval"))
 
