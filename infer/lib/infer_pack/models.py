@@ -892,7 +892,7 @@ class SynthesizerTrnMs768NSFsid_nono(nn.Module):
         o = self.dec(z * x_mask, g=g)
         return o, x_mask, (z, z_p, m_p, logs_p)
 
-class MultiPeriodDiscriminatorV2(torch.nn.Module):
+class MultiPeriodDiscriminator(torch.nn.Module):
     def __init__(self, use_spectral_norm=False):
         super(MultiPeriodDiscriminatorV2, self).__init__()
         # periods = [2, 3, 5, 7, 11, 17]
