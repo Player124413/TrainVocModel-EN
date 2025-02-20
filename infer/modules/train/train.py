@@ -600,7 +600,7 @@ def train_and_evaluate(
             "Финальная модель успешно сохранена: %s"
             % (
                 savee(
-                    ckpt, hps.sample_rate, hps.if_f0, hps.name, epoch, hps.version, hps
+                    ckpt, hps.sample_rate, hps.if_f0, hps.name, epoch, hps.version, hps, vocoder,
                 )
             )
         )
