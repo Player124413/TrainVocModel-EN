@@ -829,6 +829,7 @@ class SynthesizerTrnMs768NSFsid(nn.Module):
         upsample_kernel_sizes,
         spk_embed_dim,
         gin_channels,
+        vocoder: str = "RefineGAN",
         sr,
         **kwargs
     ):
@@ -862,12 +863,13 @@ class SynthesizerTrnMs768NSFsid(nn.Module):
             kernel_size,
             float(p_dropout),
         )
-        self.dec = RefineGANGenerator(
-            sample_rate=sr,
-            downsample_rates=upsample_rates[::-1],
-            upsample_rates=upsample_rates,
-            start_channels=16,
-            num_mels=inter_channels,
+        if vocoder == "RefineGAN":
+             self.dec = RefineGANGenerator(
+                 sample_rate=sr,
+                 downsample_rates=upsample_rates[::-1],
+                 upsample_rates=upsample_rates,
+                 start_channels=16,
+                 num_mels=inter_channels,
         )
         self.enc_q = PosteriorEncoder(
             spec_channels,
