@@ -59,7 +59,7 @@ from infer.lib.train.data_utils import (
 from infer.lib.infer_pack.models import (
     SynthesizerTrnMs768NSFsid as RVC_Model_f0,
     SynthesizerTrnMs768NSFsid_nono as RVC_Model_nof0,
-    MultiPeriodDiscriminatorV2 as MultiPeriodDiscriminator,
+    MultiPeriodDiscriminator,
 )
 
 from infer.lib.train.losses import (
