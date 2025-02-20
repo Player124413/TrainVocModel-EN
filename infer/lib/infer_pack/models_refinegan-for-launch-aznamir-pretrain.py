@@ -829,8 +829,9 @@ class SynthesizerTrnMs768NSFsid(nn.Module):
         upsample_kernel_sizes,
         spk_embed_dim,
         gin_channels,
-        vocoder: str = "RefineGAN",
         sr,
+        vocoder: str = "RefineGAN",
+        
         **kwargs
     ):
         super(SynthesizerTrnMs768NSFsid, self).__init__()
