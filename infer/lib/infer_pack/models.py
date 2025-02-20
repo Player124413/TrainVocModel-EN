@@ -582,6 +582,8 @@ sr2sr = {
     "40k": 40000,
     "48k": 48000,
 }
+
+
 class SynthesizerTrnMs768NSFsid(nn.Module):
     def __init__(
         self,
@@ -743,6 +745,7 @@ class SynthesizerTrnMs768NSFsid(nn.Module):
         o = self.dec(z * x_mask, nsff0, g=g)
         return o, x_mask, (z, z_p, m_p, logs_p)
 
+
 class SynthesizerTrnMs768NSFsid_nono(nn.Module):
     def __init__(
         self,
@@ -891,7 +894,9 @@ class SynthesizerTrnMs768NSFsid_nono(nn.Module):
         z = self.flow(z_p, x_mask, g=g, reverse=True)
         o = self.dec(z * x_mask, g=g)
         return o, x_mask, (z, z_p, m_p, logs_p)
- class MultiPeriodDiscriminator(torch.nn.Module):
+
+
+class MultiPeriodDiscriminator(torch.nn.Module):
     def __init__(self, use_spectral_norm=False):
         super(MultiPeriodDiscriminator, self).__init__()
         periods = [2, 3, 5, 7, 11, 17]
@@ -919,6 +924,7 @@ class SynthesizerTrnMs768NSFsid_nono(nn.Module):
             fmap_gs.append(fmap_g)
 
         return y_d_rs, y_d_gs, fmap_rs, fmap_gs       
+
 
 class MultiPeriodDiscriminatorV2(torch.nn.Module):
     def __init__(self, use_spectral_norm=False):
