@@ -587,6 +587,7 @@ def train_and_evaluate(
                         epoch,
                         hps.version,
                         hps,
+                        vocoder,
                     ),
                 )
             )
