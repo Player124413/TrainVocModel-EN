@@ -188,7 +188,6 @@ class VC:
                 self.tgt_sr,
                 resample_sr,
                 rms_mix_rate,
-                self.version,
                 protect,
                 f0_file,
             )
