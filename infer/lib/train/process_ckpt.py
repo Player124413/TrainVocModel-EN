@@ -6,7 +6,7 @@ from collections import OrderedDict
 import torch
 
 
-def savee(ckpt, sr, if_f0, name, epoch, hps, vocoder):
+def savee(ckpt, sr, if_f0, name, epoch, hps):
     try:
         opt = OrderedDict()
         opt["weight"] = {}
@@ -38,7 +38,6 @@ def savee(ckpt, sr, if_f0, name, epoch, hps, vocoder):
         opt["sr"] = sr
         opt["f0"] = if_f0
         opt["version"] = "v2"
-        opt["vocoder"] = vocoder
         torch.save(opt, "assets/weights/%s.pth" % name)
         return "Success."
     except:
