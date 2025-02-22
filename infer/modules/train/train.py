@@ -193,7 +193,7 @@ def run(rank, n_gpus, hps, logger: logging.Logger):
             **hps.model,
             is_half=hps.train.fp16_run,
             sr=hps.sample_rate,
-            
+            vocoder=vocoder
         )
     else:
         net_g = RVC_Model_nof0(
@@ -583,6 +583,7 @@ def train_and_evaluate(
                         epoch,
                         hps.version,
                         hps,
+                        vocoder,
                     ),
                 )
             )
@@ -600,7 +601,7 @@ def train_and_evaluate(
             "Финальная модель успешно сохранена: %s"
             % (
                 savee(
-                    ckpt, hps.sample_rate, hps.if_f0, hps.name, epoch, hps.version, hps,
+                    ckpt, hps.sample_rate, hps.if_f0, hps.name, epoch, hps.version, hps, vocoder,
                 )
             )
         )
