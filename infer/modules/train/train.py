@@ -91,7 +91,7 @@ from infer.lib.train.losses import (
 from infer.lib.train.mel_processing import mel_spectrogram_torch, spec_to_mel_torch
 from infer.lib.train.process_ckpt import savee
 global_step = 0
-
+vocoder = sys.argv[15]
 class EpochRecorder:
     def __init__(self):
         self.last_time = ttime()
