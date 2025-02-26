@@ -503,7 +503,8 @@ def train_and_evaluate(
             y_d_hat_r, y_d_hat_g, fmap_r, fmap_g = net_d(wave, y_hat)
             with autocast(device_type='cuda', enabled=False):
                 
-                
+                pad_size = y_mel.size(2) - y_hat_mel.size(2)
+                y_hat_mel = F.pad(y_hat_mel, (0, pad_size))
                 loss_mel = F.l1_loss(y_mel, y_hat_mel) * hps.train.c_mel / 3.0
                 loss_kl = kl_loss(z_p, logs_q, m_p, logs_p, z_mask) * hps.train.c_kl
                 loss_fm = feature_loss(fmap_r, fmap_g)
