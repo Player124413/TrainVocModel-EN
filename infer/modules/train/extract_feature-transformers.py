@@ -7,7 +7,7 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 import transformers
-from transformers import HubertModel, HubertConfig, Wav2Vec2FeatureExtractor
+from transformers import HubertModel
 
 n_part = int(sys.argv[1])
 i_part = int(sys.argv[2])
@@ -61,31 +61,11 @@ def readwave(wav_path, normalize=False):
     return feats
 
 
-if not os.path.exists(config_path) or not os.path.exists(model_file_path):
-    printt(
-        f"Error: Model files not found in {model_path}. "
-        "Please ensure the directory contains 'config.json' and 'pytorch_model.bin'."
-    )
-    exit(0)
-
-# Load the HuBERT model and feature extractor from Transformers
-config = HubertConfig.from_pretrained(model_path)
-feature_extractor = Wav2Vec2FeatureExtractor.from_pretrained(model_path)
-# Determine which model to load based on the configuration
-if "HubertModelWithFinalProj" in config.architectures:
-    class HubertModelWithFinalProj(HubertModel):
-        def __init__(self, config):
-            super().__init__(config)
-
-        # The final projection layer is only used for backward compatibility.
-        # Following https://github.com/auspicious3000/contentvec/issues/6
-        # Remove this layer is necessary to achieve the desired outcome.
-            self.final_proj = nn.Linear(config.hidden_size, config.classifier_proj_size)
-    model = HubertModelWithFinalProj.from_pretrained(model_path)
-else:
-    model = HubertModel.from_pretrained(model_path)
-model = model.to(device)
-
+class HubertModelWithFinalProj(HubertModel):
+    def __init__(self, config):
+        super().__init__(config)
+        self.final_proj = nn.Linear(config.hidden_size, config.classifier_proj_size)
+models = HubertModelWithFinalProj.from_pretrained(model_path)
 if is_half and device not in ["mps", "cpu"]:
     model = model.half()
 model.eval()
