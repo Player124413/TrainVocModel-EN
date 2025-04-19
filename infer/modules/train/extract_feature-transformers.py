@@ -95,21 +95,21 @@ else:
                     continue
 
                 feats = readwave(wav_path, normalize=False)  # Normalize input
-                inputs = feature_extractor(
-                    feats.squeeze(0).numpy(),
-                    sampling_rate=16000,
-                    return_tensors="pt",
-                ).to(device)
-
-                if is_half and device not in ["mps", "cpu"]:
-                    inputs["input_values"] = inputs["input_values"].half()
-
+                padding_mask = torch.BoolTensor(feats.shape).fill_(False)
+                inputs = {
+                    "source": (
+                        feats.half().to(device)
+                        if is_half and device not in ["mps", "cpu"]
+                        else feats.to(device)
+                    ),
+                    "padding_mask": padding_mask.to(device),
+                    "output_layer": 9 if version == "v1" else 12,
+                }
                 with torch.no_grad():
-                    outputs = model(**inputs, output_hidden_states=True)
-                    if version == "v1":
-                        feats = outputs.hidden_states[9]  # Use the 9th layer for v1
-                    else:
-                        feats = outputs.last_hidden_state  # Use the last layer for others
+                    logits = model.extract_features(**inputs)
+                    feats = (
+                        model.final_proj(logits[0]) if version == "v1" else logits[0]
+                    )
 
                 feats = feats.squeeze(0).float().cpu().numpy()
                 if np.isnan(feats).sum() == 0:
