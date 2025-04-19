@@ -37,7 +37,6 @@ def printt(strr):
 model_path = "assets/hubert"  # Local directory containing model files
 config_path = os.path.join(model_path, "config.json")  # Path to config.json
 model_file_path = os.path.join(model_path, "pytorch_model.bin")  # Path to pytorch_model.bin
-preprocessor_config_path = os.path.join(model_path, "preprocessor_config.json")
 wavPath = f"{exp_dir}/1_16k_wavs"
 outPath = (
     f"{exp_dir}/3_feature256"
