@@ -34,7 +34,7 @@ def printt(strr):
     f.flush()
 
 
-model_path = "assets/hubert"  # Local directory containing model files
+model_path = "assets/WavLM"  # Local directory containing model files
 config_path = os.path.join(model_path, "config.json")  # Path to config.json
 model_file_path = os.path.join(model_path, "pytorch_model.bin")  # Path to pytorch_model.bin
 wavPath = f"{exp_dir}/1_16k_wavs"
