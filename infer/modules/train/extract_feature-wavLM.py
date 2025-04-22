@@ -7,7 +7,7 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 import transformers
-from transformers import HubertModel
+from transformers import Wav2Vec2FeatureExtractor, WavLMModel
 
 n_part = int(sys.argv[1])
 i_part = int(sys.argv[2])
@@ -60,11 +60,7 @@ def readwave(wav_path, normalize=False):
     return feats
 
 
-class HubertModelWithFinalProj(HubertModel):
-    def __init__(self, config):
-        super().__init__(config)
-        self.final_proj = nn.Linear(config.hidden_size, config.classifier_proj_size)
-model = HubertModelWithFinalProj.from_pretrained(model_path)
+model = WavLMModel.from_pretrained(model_path)
 model = model.to(device)
 if is_half and device not in ["mps", "cpu"]:
     model = model.half()
