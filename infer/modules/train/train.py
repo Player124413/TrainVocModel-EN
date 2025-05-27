@@ -56,13 +56,13 @@ from infer.lib.train.data_utils import (
     TextAudioLoaderMultiNSFsid,
 )
 
-if hps.version == "v1":
-    from infer.lib.infer_pack.models import MultiPeriodDiscriminator
-    from infer.lib.infer_pack.models import SynthesizerTrnMs256NSFsid as RVC_Model_f0
-    from infer.lib.infer_pack.models import (
-        SynthesizerTrnMs256NSFsid_nono as RVC_Model_nof0,
+if hps.vocoder == "RefineGAN":
+    from infer.lib.infer_pack.models_refinegan import (
+        SynthesizerTrnMs768NSFsid as RVC_Model_f0,
+        SynthesizerTrnMs768NSFsid_nono as RVC_Model_nof0,
+        MultiPeriodDiscriminatorV2 as MultiPeriodDiscriminator,
     )
-else:
+if hps.vocoder == "Hifi-GAN":
     from infer.lib.infer_pack.models import (
         SynthesizerTrnMs768NSFsid as RVC_Model_f0,
         SynthesizerTrnMs768NSFsid_nono as RVC_Model_nof0,
@@ -179,7 +179,7 @@ def run(rank, n_gpus, hps, logger: logging.Logger):
             **hps.model,
             is_half=hps.train.fp16_run,
             sr=hps.sample_rate,
-            vocoder=vocoder
+            vocoder=hps.vocoder,
             
         )
     else:
@@ -572,6 +572,7 @@ def train_and_evaluate(
                         hps.name + "_e%s_s%s" % (epoch, global_step),
                         epoch,
                         hps,
+                        vocoder=hps.vocoder,
                         
                     ),
                 )
@@ -590,7 +591,7 @@ def train_and_evaluate(
             "Финальная модель успешно сохранена: %s"
             % (
                 savee(
-                    ckpt, hps.sample_rate, hps.if_f0, hps.name, epoch, hps,
+                    ckpt, hps.sample_rate, hps.if_f0, hps.name, epoch, hps, vocoder=hps.vocoder,
                 )
             )
         )
