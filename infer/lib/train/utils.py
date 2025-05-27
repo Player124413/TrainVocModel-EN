@@ -129,6 +129,7 @@ def get_hparams(init=True):
     parser.add_argument("-sr", "--sample_rate", type=str, required=True)
     parser.add_argument("-sw", "--save_every_weights", type=int, default=1)
     parser.add_argument("-v", "--version", type=str, default="v2")
+    parser.add_argument("-voc", "--vocoder", type=str, default="Hifi-GAN")
     parser.add_argument("-f0", "--if_f0", type=int, default=1)
     parser.add_argument("-l", "--if_latest", type=int, default=1)
     parser.add_argument("-c", "--if_cache_data_in_gpu", type=int, default=0)
@@ -149,6 +150,7 @@ def get_hparams(init=True):
     hparams.pretrainG = args.pretrainG
     hparams.pretrainD = args.pretrainD
     hparams.version = args.version
+    hparams.vocoder = args.vocoder
     hparams.gpus = args.gpus
     hparams.train.batch_size = args.batch_size
     hparams.sample_rate = args.sample_rate
