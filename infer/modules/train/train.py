@@ -494,7 +494,8 @@ def train_and_evaluate(
                 loss_kl = kl_loss(z_p, logs_q, m_p, logs_p, z_mask) * hps.train.c_kl
                 loss_fm = feature_loss(fmap_r, fmap_g)
                 loss_gen, losses_gen = generator_loss(y_d_hat_g)
-                loss_gen_all = loss_gen + loss_fm + loss_mel + loss_kl
+                loss_lf0 = F.mse_loss(pred_lf0, lf0) if net_g.module.use_automatic_f0_prediction else 0
+                loss_gen_all = loss_gen + loss_fm + loss_mel + loss_kl + loss_lf0
                 del y_mel, y_hat_mel, z_p, logs_q, m_p, logs_p, z_mask, fmap_r, fmap_g, y_d_hat_g
                 torch.cuda.empty_cache()
         optim_g.zero_grad()
@@ -520,8 +521,17 @@ def train_and_evaluate(
             "loss/g/fm": loss_fm,
             "loss/g/mel": loss_mel,
             "loss/g/kl": loss_kl,
+            "loss/g/lf0": loss_lf0,
         }
         utils.summarize(writer=writer, epoch=epoch, scalars=scalar_dict)
+    if net_g.module.use_automatic_f0_prediction:
+            image_dict.update({
+            "all/lf0": utils.plot_data_to_numpy(lf0[0, 0, :].cpu().numpy(),
+                            pred_lf0[0, 0, :].detach().cpu().numpy()),
+            "all/norm_lf0": utils.plot_data_to_numpy(lf0[0, 0, :].cpu().numpy(),
+                            norm_lf0[0, 0, :].detach().cpu().numpy())
+        })
+
 
     if epoch % hps.save_every_epoch == 0 and rank == 0:
         if hps.if_latest == 0:
