@@ -828,6 +828,7 @@ class SynthesizerTrnMs768NSFsid(nn.Module):
         spk_embed_dim,
         gin_channels,
         sr,
+        use_automatic_f0_prediction = True,
         **kwargs
     ):
         super(SynthesizerTrnMs768NSFsid, self).__init__()
@@ -849,6 +850,7 @@ class SynthesizerTrnMs768NSFsid(nn.Module):
         self.upsample_kernel_sizes = upsample_kernel_sizes
         self.segment_size = segment_size
         self.gin_channels = gin_channels
+        self.use_automatic_f0_prediction = use_automatic_f0_prediction
         # self.hop_length = hop_length#
         self.spk_embed_dim = spk_embed_dim
         self.enc_p = TextEncoder768(
@@ -940,7 +942,27 @@ class SynthesizerTrnMs768NSFsid(nn.Module):
         pitchf = commons.slice_segments2(pitchf, ids_slice, self.segment_size)
         # print(-2,pitchf.shape,z_slice.shape)
         o = self.dec(z_slice, pitchf, g=g)
-        return o, ids_slice, x_mask, y_mask, (z, z_p, m_p, logs_p, m_q, logs_q)
+        # f0 predict
+        if self.use_automatic_f0_prediction:
+            lf0 = 2595. * torch.log10(1. + f0.unsqueeze(1) / 700.) / 500
+            norm_lf0 = utils.normalize_f0(lf0, x_mask, uv)
+            pred_lf0 = self.f0_decoder(x, norm_lf0, x_mask, spk_emb=g)
+        else:
+            lf0 = 0
+            norm_lf0 = 0
+            pred_lf0 = 0
+        # encoder
+        z_ptemp, m_p, logs_p, _ = self.enc_p(x, x_mask, f0=f0_to_coarse(f0))
+        z, m_q, logs_q, spec_mask = self.enc_q(spec, spec_lengths, g=g)
+
+        # flow
+        z_p = self.flow(z, spec_mask, g=g)
+        z_slice, pitch_slice, ids_slice = commons.rand_slice_segments_with_pitch(z, f0, spec_lengths, self.segment_size)
+
+        # nsf decoder
+        o = self.dec(z_slice, g=g, f0=pitch_slice)
+
+        return o, ids_slice, x_mask, y_mask, (z, z_p, m_p, logs_p, m_q, logs_q),  pred_lf0, norm_lf0, lf0
 
     @torch.jit.export
     def infer(
@@ -967,7 +989,16 @@ class SynthesizerTrnMs768NSFsid(nn.Module):
         z = self.flow(z_p, x_mask, g=g, reverse=True)
         o = self.dec(z * x_mask, nsff0, g=g)
         return o, x_mask, (z, z_p, m_p, logs_p)
-
+        if self.use_automatic_f0_prediction and predict_f0:
+            lf0 = 2595. * torch.log10(1. + f0.unsqueeze(1) / 700.) / 500
+            norm_lf0 = utils.normalize_f0(lf0, x_mask, uv, random_scale=False)
+            pred_lf0 = self.f0_decoder(x, norm_lf0, x_mask, spk_emb=g)
+            f0 = (700 * (torch.pow(10, pred_lf0 * 500 / 2595) - 1)).squeeze(1)
+        
+        z_p, m_p, logs_p, c_mask = self.enc_p(x, x_mask, f0=f0_to_coarse(f0), noice_scale=noice_scale)
+        z = self.flow(z_p, c_mask, g=g, reverse=True)
+        o = self.dec(z * c_mask, g=g, f0=f0)
+        return o,f0
 
 class SynthesizerTrnMs256NSFsid_nono(nn.Module):
     def __init__(
@@ -1094,7 +1125,27 @@ class SynthesizerTrnMs256NSFsid_nono(nn.Module):
         )
         o = self.dec(z_slice, g=g)
         return o, ids_slice, x_mask, y_mask, (z, z_p, m_p, logs_p, m_q, logs_q)
+         # f0 predict
+        if self.use_automatic_f0_prediction:
+            lf0 = 2595. * torch.log10(1. + f0.unsqueeze(1) / 700.) / 500
+            norm_lf0 = utils.normalize_f0(lf0, x_mask, uv)
+            pred_lf0 = self.f0_decoder(x, norm_lf0, x_mask, spk_emb=g)
+        else:
+            lf0 = 0
+            norm_lf0 = 0
+            pred_lf0 = 0
+        # encoder
+        z_ptemp, m_p, logs_p, _ = self.enc_p(x, x_mask, f0=f0_to_coarse(f0))
+        z, m_q, logs_q, spec_mask = self.enc_q(spec, spec_lengths, g=g)
 
+        # flow
+        z_p = self.flow(z, spec_mask, g=g)
+        z_slice, pitch_slice, ids_slice = commons.rand_slice_segments_with_pitch(z, f0, spec_lengths, self.segment_size)
+
+        # nsf decoder
+        o = self.dec(z_slice, g=g, f0=pitch_slice)
+
+        return o, ids_slice, x_mask, y_mask, (z, z_p, m_p, logs_p, m_q, logs_q),  pred_lf0, norm_lf0, lf0
     @torch.jit.export
     def infer(
         self,
@@ -1117,7 +1168,16 @@ class SynthesizerTrnMs256NSFsid_nono(nn.Module):
         z = self.flow(z_p, x_mask, g=g, reverse=True)
         o = self.dec(z * x_mask, g=g)
         return o, x_mask, (z, z_p, m_p, logs_p)
-
+        if self.use_automatic_f0_prediction and predict_f0:
+            lf0 = 2595. * torch.log10(1. + f0.unsqueeze(1) / 700.) / 500
+            norm_lf0 = utils.normalize_f0(lf0, x_mask, uv, random_scale=False)
+            pred_lf0 = self.f0_decoder(x, norm_lf0, x_mask, spk_emb=g)
+            f0 = (700 * (torch.pow(10, pred_lf0 * 500 / 2595) - 1)).squeeze(1)
+        
+        z_p, m_p, logs_p, c_mask = self.enc_p(x, x_mask, f0=f0_to_coarse(f0), noice_scale=noice_scale)
+        z = self.flow(z_p, c_mask, g=g, reverse=True)
+        o = self.dec(z * c_mask, g=g, f0=f0)
+        return o,f0
 
 class SynthesizerTrnMs768NSFsid_nono(nn.Module):
     def __init__(
