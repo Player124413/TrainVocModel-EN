@@ -17,7 +17,21 @@ for handler in logging.root.handlers[:]:
 
 logging.basicConfig(stream=sys.stdout, level=logging.INFO)
 logger = logging
+def normalize_f0(f0, x_mask, uv, random_scale=True):
+    # calculate means based on x_mask
+    uv_sum = torch.sum(uv, dim=1, keepdim=True)
+    uv_sum[uv_sum == 0] = 9999
+    means = torch.sum(f0[:, 0, :] * uv, dim=1, keepdim=True) / uv_sum
 
+    if random_scale:
+        factor = torch.Tensor(f0.shape[0], 1).uniform_(0.8, 1.2).to(f0.device)
+    else:
+        factor = torch.ones(f0.shape[0], 1).to(f0.device)
+    # normalize f0 based on means and factor
+    f0_norm = (f0 - means.unsqueeze(-1)) * factor.unsqueeze(-1)
+    if torch.isnan(f0_norm).any():
+        exit(0)
+    return f0_norm * x_mask
 
 def load_checkpoint(checkpoint_path, model, optimizer=None, load_opt=1):
     assert os.path.isfile(checkpoint_path)
